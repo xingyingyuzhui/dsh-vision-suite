@@ -1,7 +1,9 @@
 # DSH Vision Bench 产品与功能规划
 
 > 文档状态：产品规划修订版 v2.0（2026-08-22）
-> 当前代码基线：`dsh-vision-bench@de211b4`，`package.json` 为 `0.17.4`，工作区模型为单连接 `version:2`
+> **术语（0.21.0）**：对外产品名统一为 **Vision 模式** / **上位机** / **调试**；文中历史「台架 / 台架模式」与现行「Vision模式」同义，新文档与 UI 优先用后者。
+> 工程发布基线：`dsh-vision-bench@0.21.0`（模块化单体重构；Windows 实机验收见 `dsh-vision-bench/docs/WINDOWS_ACCEPTANCE_0.21.md`）
+> 历史快照：`dsh-vision-bench@de211b4`，`package.json` 曾为 `0.17.4`，工作区模型为单连接 `version:2`
 > 目标产品：`dsh-vision-bench`  
 > 目标运行平台：Windows  
 > 当前开发环境：macOS，仅用于开发与验证，不属于正式产品范围  
