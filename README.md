@@ -9,6 +9,7 @@
 | 插件 | 职责 | 仓库 |
 |---|---|---|
 | [dsh-vision-bench](./dsh-vision-bench/) | 会话区调试 / 上位机，Keil 编译、Modbus 读写（FC01–06/15/16）、共享任务与时间线，设置页绑定 Keil UV4 / OpenOCD（Node Modbus 运行时），并安装「Vision模式」Agent 预设 | https://github.com/xingyingyuzhui/dsh-vision-bench |
+| [dsh-vision-harness](./dsh-vision-harness/) | 失败预设按 generation 缓存、client-modules 每批只扫一次插件树。不包含 UI 或工具 | 本合集内 |
 
 后续可能再加入领域 skill 或其它调试插件。
 
@@ -23,6 +24,8 @@ dsh plugin --profile web add github:xingyingyuzhui/dsh-vision-bench
 ```sh
 dsh plugin --profile web add link:/Users/qin/DSH/plugins/dsh-vision-suite/dsh-vision-bench
 ```
+
+`dsh-vision-harness` 不是默认安装。只有在官方 DSH 仍会把坏预设反复挂载、且已做成最小复现之后，才按适用版本单独加。
 
 装完重启 `dsh web`。新会话选 **Vision模式** 后，Agent 用 `vision_bench` 按需查询和编译/读点/写点。
 

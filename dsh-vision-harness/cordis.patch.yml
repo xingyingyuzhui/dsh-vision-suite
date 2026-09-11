@@ -1,0 +1,6 @@
+# Vision suite harness guards: standing-mount isolation + per-batch plugin scan.
+- insert:
+    - id: dsh-vision-standing-guard
+      name: dsh-vision-harness
+    - id: dsh-vision-scan-guard
+      name: dsh-vision-harness/scan

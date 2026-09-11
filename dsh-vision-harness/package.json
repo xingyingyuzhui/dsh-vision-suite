@@ -1,0 +1,36 @@
+{
+  "name": "dsh-vision-harness",
+  "version": "0.1.0",
+  "description": "Vision 套件的 Harness 护栏：失败预设按 generation 缓存、client-modules 每批只扫一次插件树。",
+  "keywords": ["dsh", "dsh-plugin", "deepseek-harness", "vision", "harness"],
+  "license": "MIT",
+  "type": "module",
+  "main": "./standing-guard.js",
+  "exports": {
+    ".": "./standing-guard.js",
+    "./scan": "./scan-guard.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "standing-guard.js",
+    "scan-guard.js",
+    "lib/dsh-home.mjs",
+    "lib/harness-log.mjs",
+    "lib/standing-failure-cache.mjs",
+    "lib/scan-batch.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
