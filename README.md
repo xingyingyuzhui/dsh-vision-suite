@@ -41,7 +41,7 @@ git clone --recurse-submodules https://github.com/xingyingyuzhui/dsh-vision-suit
 
 ## 规划
 
-产品定位、里程碑（M1–M5）与验收场景见 [VISION_BENCH_PRODUCT_PLAN.md](./VISION_BENCH_PRODUCT_PLAN.md)。
+现行能力见 [dsh-vision-bench/README.md](./dsh-vision-bench/README.md)。已完成的历史计划在 [docs/archive/](./docs/archive/)。
 
 ## License
 
