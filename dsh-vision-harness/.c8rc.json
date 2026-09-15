@@ -1,0 +1,19 @@
+{
+  "_rationale": [
+    "P5-3 c8 --all: include every published production JS entry and lib module.",
+    "EXCLUDE test/** and scripts/**: gates and fixtures are not production coverage.",
+    "EXCLUDE node_modules/** and coverage/**."
+  ],
+  "include": [
+    "standing-guard.js",
+    "scan-guard.js",
+    "lib/**"
+  ],
+  "exclude": [
+    "test/**",
+    "scripts/**",
+    "node_modules/**",
+    "coverage/**"
+  ],
+  "extension": [".js", ".mjs"]
+}

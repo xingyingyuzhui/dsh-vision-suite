@@ -50,13 +50,16 @@ export function createHarnessLog(opts) {
     }
     stream = createWriteStream(file, { flags: 'a' })
     if (typeof stream.on === 'function') {
-      stream.on('error', (error) => {
+      stream.on('error', (/** @type {unknown} */ error) => {
         streamError = error instanceof Error ? error.message : String(error)
       })
     }
     return stream
   }
 
+  /**
+   * @param {number} chunkSize
+   */
   function rotateIfNeeded(chunkSize) {
     if (bytes + chunkSize < maxBytes) return
     try {
@@ -118,6 +121,7 @@ export function createHarnessLog(opts) {
     }
     const first = !prev
     keys.set(key, { lastAt: ts, count: (prev?.count || 0) + 1, firstStack: prev?.firstStack || stack })
+    /** @type {Record<string, unknown>} */
     const payload = {
       ts,
       key,

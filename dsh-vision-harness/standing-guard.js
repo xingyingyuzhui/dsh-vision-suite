@@ -1,3 +1,4 @@
+// @ts-check
 import { readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { defaultDshHome } from './lib/dsh-home.mjs'
@@ -10,6 +11,9 @@ import {
 export const name = 'dsh-vision-standing-guard'
 export const inject = ['agentPresets']
 
+/**
+ * @param {{ path?: string, depVersion?: string, id?: string }} preset
+ */
 function readGeneration(preset) {
   const path = preset?.path
   if (!path) {
@@ -24,6 +28,15 @@ function readGeneration(preset) {
   )
 }
 
+/**
+ * @param {{
+ *   agentPresets?: {
+ *     ensureStanding?: Function & { __dshVisionStandingGuard?: boolean },
+ *     retryStanding?: Function,
+ *   },
+ *   effect: (factory: () => () => void) => unknown,
+ * }} ctx
+ */
 export function apply(ctx) {
   const service = ctx.agentPresets
   if (!service || typeof service.ensureStanding !== 'function') {
@@ -41,19 +54,25 @@ export function apply(ctx) {
     },
   })
 
+  /**
+   * @param {{ id: string, path?: string, depVersion?: string }} preset
+   * @param {{ retry?: boolean, source?: string, correlationId?: string }} [options]
+   */
   function ensureStandingGuarded(preset, options) {
     const generation = readGeneration(preset)
     return cache.ensure(preset, generation, (next) => orig(next), options)
   }
   ensureStandingGuarded.__dshVisionStandingGuard = true
-  service.ensureStanding = ensureStandingGuarded
+  service.ensureStanding = /** @type {typeof service.ensureStanding} */ (ensureStandingGuarded)
 
-  service.retryStanding = function retryStanding(preset) {
-    return service.ensureStanding(preset, { retry: true, source: 'retryStanding' })
+  service.retryStanding = function retryStanding(/** @type {{ id: string, path?: string, depVersion?: string }} */ preset) {
+    return service.ensureStanding?.(preset, { retry: true, source: 'retryStanding' })
   }
 
   ctx.effect(() => () => {
-    if (service.ensureStanding === ensureStandingGuarded) service.ensureStanding = orig
+    if (service.ensureStanding === ensureStandingGuarded) {
+      service.ensureStanding = /** @type {typeof service.ensureStanding} */ (orig)
+    }
     if (service.retryStanding) service.retryStanding = undefined
     log.close()
   })

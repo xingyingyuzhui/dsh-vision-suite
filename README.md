@@ -43,6 +43,8 @@ git clone --recurse-submodules https://github.com/xingyingyuzhui/dsh-vision-suit
 
 现行能力见 [dsh-vision-bench/README.md](./dsh-vision-bench/README.md)。已完成的历史计划在 [docs/archive/](./docs/archive/)。
 
+结构与测试重构（P0–P6）已收口：现行未完成事项见 [docs/VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md](./docs/VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md)；全文在 [docs/archive/VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md](./docs/archive/VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md)。
+
 ## License
 
 各插件与本合集均为 MIT。
