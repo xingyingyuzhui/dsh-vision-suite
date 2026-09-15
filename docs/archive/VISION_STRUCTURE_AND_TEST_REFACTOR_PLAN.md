@@ -2,8 +2,8 @@
 
 状态：**P0–P6 已完成**（2026-09-15）；本文件为归档全文  
 制定日期：2026-09-15  
-修订日期：2026-09-15（P6 收口见 §10；现行摘要见 [`../VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md`](../VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md)）  
-适用范围：`dsh-vision-bench` 0.28.7、`dsh-vision-harness` 0.1.0  
+修订日期：2026-09-15（P6 收口见 §10，含 P6-5 验证边界；现行摘要见 [`../VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md`](../VISION_STRUCTURE_AND_TEST_REFACTOR_PLAN.md)）  
+适用范围：`dsh-vision-bench` 0.29.0（最终提交 `8117dbb`）、`dsh-vision-harness` 0.2.0  
 目标：完成大文件治理、统一分层、公共元素复用和测试体系瘦身，使结构要求可以由自动化门禁持续验证。
 
 ## 1. 当前基线
@@ -945,7 +945,7 @@ P6-1 期间修复：CORE 模块迁入 `src/` 后缺 JSDoc 导致 typecheck 失�
 - 本全文移入 `docs/archive/`；合集根现行计划缩为未完成事项摘要。
 - 合集 `README.md` 规划段指向归档 + 现行摘要。
 
-### [x] P6-4：版本与子模块收口（文档就绪；未发版）
+### [x] P6-4：版本与子模块收口
 
 **工作量：**30–60 分钟  
 **验收：**
@@ -954,17 +954,32 @@ P6-1 期间修复：CORE 模块迁入 `src/` 后缺 JSDoc 导致 typecheck 失�
 - 再在合集更新 submodule 指针和套件说明。
 - 未经明确批准不发布 npm、不推送 release。
 
-**实施记录（2026-09-15）— 仅笔记，未 bump / 未 tag / 未 commit：**
+**实施记录（2026-09-15）— 已完成（除发布）：**
 
-| 项 | 当前 | 建议下一步（需用户批准） |
+| 项 | 最终值 | 证据 |
 |---|---|---|
-| Bench 版本 | `package.json` **0.28.7** | 结构重构收口后可 bump（如 0.28.8 或 0.29.0）+ CHANGELOG + `npm run build` 提交 `client.js` |
-| Harness 版本 | **0.1.0** | 按需；本轮无协议变更则可不动 |
-| 合集 submodule `dsh-vision-bench` | 指针仍偏旧（`v0.26.0-67-g50670d6`）；工作区含大量未提交重构 | Bench 仓先提交并推送，再更新合集 submodule 指针 |
+| Bench 版本 | **0.29.0** | `dsh-vision-bench/package.json`；CHANGELOG `## 0.29.0` |
+| Bench 提交 | `823bf22` 发布结构/测试重构 + 生成物；`8117dbb` Windows CI 路径修复 | `git log --oneline` |
+| Harness 版本 | **0.2.0** | `dsh-vision-harness/package.json`；CHANGELOG |
+| 合集 submodule `dsh-vision-bench` | `823bf22 → **8117dbb**` | 合集 P0-1 提交（见 `docs/VISION_COMPONENT_REUSE_AND_ENGINEERING_PLAN.md` §P0-1） |
 | 合集内 `dsh-vision-harness` | 非 submodule，与合集同树 | 随合集提交 |
-| 发布 | **未** npm publish / **未** git tag / **未** push release | 明确批准后再做 |
+| 发布 | **未** npm publish / **未** git tag | 未经明确批准不做 |
 
-**Ready for version bump：**双仓 `npm run quality` 已绿；缺的是变更集提交、CHANGELOG 与 submodule 指针同步。
+**双仓 `npm run quality` 已绿**（Bench 1245 tests、Harness 25 tests，无 skipped/todo）。
+合集指针在 P0-2 时已同步到含 Windows 修复的 `8117dbb`；按用户指示**暂不推送远端**。
+
+### [x] P6-5：验证边界的准确表述
+
+自动化与真机是两条独立证据链，不得互相代表：
+
+| 层次 | 已证 | 未证 |
+|---|---|---|
+| **Windows 自动化 CI** | GitHub Actions `quality.yml` 在 `ubuntu-latest`/`windows-latest` × Node 20/22 四组矩阵通过（含路径断言 Windows-safe 修复 `8117dbb`） | CI 不装载真实宿主插件，不接真串口/探针 |
+| **真实 Windows 宿主** | — | `dsh plugin add/remove`、多窗口、client 缓存 bust、Windows 路径手测 |
+| **真实硬件** | — | STM32 + OpenOCD 板级调试、Keil UV4 真机编译、Modbus RTU 从站、Keil UVSC 仿真器 |
+
+`DEFERRED_WINDOWS_ACCEPTANCE` 保持有效。计划的“Windows 通过”一律指**自动化 CI**，不是真机验收；
+真机验收清单见 `dsh-vision-bench/docs/WINDOWS_ACCEPTANCE_0.27.md`（**仍未执行**）。
 
 ## 11. 提交与审查策略
 
