@@ -1,8 +1,22 @@
 # Vision 插件集组件复用与工程化治理计划
 
-状态：**Proposed**  
+状态：**In Progress**（2026-09-16 续作）  
 范围：`dsh-vision-bench`、`dsh-vision-harness` 与合集收口  
-基线：Bench `0.29.0`（当前检出 `8117dbb`），Harness `0.2.0`  
+基线：Bench `0.29.0`；合集 submodule 指针跟到 P2-3 tip（`3b1a508`，含 ADR-025 / P2-1 测试 / P2-3 API 统一）。
+
+## 进度快照（相对本文 §4）
+
+| 阶段 | 状态 | 备注 |
+|---|---|---|
+| P0 发布与事实收口 | **部分完成** | 合集已 pin 当前 bench tip；完整 P0 验收记录/真机项仍待 P7 |
+| P1-1 组件清单 | **完成** | `dsh-vision-bench/docs/plans/2026-09-15-002-component-and-pattern-inventory.md` |
+| P1-2 API 规范 | **完成** | `ADR-025-public-ui-component-api-contract.md` |
+| P1-3 测试 harness | **完成** | `test/helpers/react-unit.mjs` + `react-runtime.mjs` 分工 |
+| P2-1 直接测试 | **基本完成** | modal / save-cancel / toggle / source-editor / viz-grid |
+| P2-2 token | 未做 | |
+| P2-3 API 统一 | **本轮完成主路径** | Select useId；Dialog 生产接线；Toggle 第二调用方；Tabs a11y；Action loading |
+| P5 门禁 | 未做 | 下一推荐：在大迁移前立门禁 |
+| P3–P4 / P6–P7 | 未做 | 按推荐顺序在 P2/P5 后 |
 
 ## 1. 决策
 
@@ -78,42 +92,21 @@ test/helpers/        跨测试文件复用的运行时、工厂和 fixture
 
 ### P1：公共层契约与重复清单
 
-#### [ ] P1-1 建立组件与模式清单（45–60 分钟）
-
-- 记录每个公共模块的职责、调用方、状态所有权、可访问性要求和测试文件。
-- 盘点 Dialog、Drawer、Select、Toggle、Tabs、Panel、Hint/EmptyState、StatusBadge、FormActions、Table、FilterToolbar、Pagination、DetailCard。
-- 标记“复用”“领域特有”“重复待合并”“不值得抽取”四类结论。
-
-**验收：**每个候选项都有真实文件和调用方证据，不以 class 名相似代替行为重复判断。
-
-#### [ ] P1-2 确立公共组件 API 规范（30–60 分钟）
-
-- 统一 React 注入、命名和返回方式，明确 `createX(React)` 与纯 `renderX(el, ...)` 的适用边界。
-- 统一 `className/style/disabled/loading/aria-*` 等基础参数约定。
-- 规定受控状态、事件回调、错误展示和 i18n fallback 的责任归属。
-
-**验收：**新增 ADR 或工程规范；现有组件逐项标记“符合/待迁移”，本任务不做大规模实现改写。
-
-#### [ ] P1-3 建立组件测试 harness（45–60 分钟）
-
-- 从现有测试中抽取统一的轻量 React renderer、节点查询、事件触发和 cleanup。
-- 与 `test/helpers/react-runtime.mjs` 分工清楚：组件单测使用轻量 harness，页面真实副作用测试使用完整 runtime。
-
-**验收：**至少迁移 `primitives`、`custom-select`、`data-table` 三组测试，测试代码减少且断言语义不变。
+#### [x] P1-1 建立组件与模式清单（45–60 分钟）
+#### [x] P1-2 确立公共组件 API 规范（30–60 分钟）
+#### [x] P1-3 建立组件测试 harness（45–60 分钟）
 
 ### P2：基础组件补齐与统一
 
-#### [ ] P2-1 补齐现有组件直接测试（每个组件 30–60 分钟）
+#### [~] P2-1 补齐现有组件直接测试（每个组件 30–60 分钟）
 
 按独立提交依次覆盖：
 
-1. `modal-dialog`
-2. `save-cancel-buttons`
-3. `toggle-switch`
-4. `source-editor`
-5. `viz-grid`
-
-**验收：**覆盖正常、disabled/loading、事件边界、ARIA 和清理行为；测试不读取生产源码文本。
+1. `modal-dialog` — 结构 + 生命周期测试已有；生产入口改 `createModalDialog`（进行中）
+2. `save-cancel-buttons` — **完成**
+3. `toggle-switch` — **完成**（含原生 click 单路径修复）
+4. `source-editor` — **完成**
+5. `viz-grid` — 已有 init/同步/卸载/只读测试，按需补强
 
 #### [ ] P2-2 收敛基础 token（45–60 分钟）
 
@@ -123,11 +116,14 @@ test/helpers/        跨测试文件复用的运行时、工厂和 fixture
 
 **验收：**公共组件不各自定义同义颜色/圆角；暗色和宿主主题行为不退化。
 
-#### [ ] P2-3 统一组件 API（每组 30–60 分钟）
+#### [x] P2-3 统一组件 API（每组 30–60 分钟）
 
-- 分组迁移 Select、Dialog、Action、Toggle、Panel/Tabs。
-- 保留必要兼容导出，并在调用方迁移完成后删除旧别名。
-- 不在本阶段改变视觉和业务行为。
+- Select：`createCustomSelect` 用 `useId`（显式 `id` 优先），多实例 listbox ID 唯一。
+- Dialog：`createModalDialog` 管 Escape/焦点/`titleId`；HMI 三入口生产接线。
+- Toggle：settings + HMI `connection-form` 双调用方。
+- Action：`loading` ≡ `saving`，busy 时 `aria-busy`。
+- Panel/Tabs：`role=tablist/tab` + `aria-selected` + 方向键/Home/End。
+- 保留兼容导出；视觉与业务行为未改。
 
 **验收：**调用方、直接测试、页面行为测试全部通过；无一次性转发 wrapper。
 
