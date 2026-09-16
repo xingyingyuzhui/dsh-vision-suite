@@ -1,22 +1,24 @@
 # Vision 插件集组件复用与工程化治理计划
 
-状态：**In Progress**（2026-09-16 续作）  
+状态：**In Progress**（2026-09-16 续作；真机验收暂缓）  
 范围：`dsh-vision-bench`、`dsh-vision-harness` 与合集收口  
-基线：Bench `0.29.0`；合集 submodule 指针跟到 P2-3 tip（`3b1a508`，含 ADR-025 / P2-1 测试 / P2-3 API 统一）。
+基线：Bench `0.29.0`；合集 tip `cccc2ed` pin bench `642b23b`（含 ADR-025 / P2-1 / P2-3 / ModalDialog 展示测试 CI 修复）。
 
 ## 进度快照（相对本文 §4）
 
 | 阶段 | 状态 | 备注 |
 |---|---|---|
-| P0 发布与事实收口 | **部分完成** | 合集已 pin 当前 bench tip；完整 P0 验收记录/真机项仍待 P7 |
+| P0 发布与事实收口 | **文档收口完成** | 指针与结构摘要已对齐 `642b23b`；真机项明确 defer，不阻塞后续阶段 |
 | P1-1 组件清单 | **完成** | `dsh-vision-bench/docs/plans/2026-09-15-002-component-and-pattern-inventory.md` |
 | P1-2 API 规范 | **完成** | `ADR-025-public-ui-component-api-contract.md` |
 | P1-3 测试 harness | **完成** | `test/helpers/react-unit.mjs` + `react-runtime.mjs` 分工 |
 | P2-1 直接测试 | **基本完成** | modal / save-cancel / toggle / source-editor / viz-grid |
-| P2-2 token | 未做 | |
-| P2-3 API 统一 | **本轮完成主路径** | Select useId；Dialog 生产接线；Toggle 第二调用方；Tabs a11y；Action loading |
-| P5 门禁 | 未做 | 下一推荐：在大迁移前立门禁 |
-| P3–P4 / P6–P7 | 未做 | 按推荐顺序在 P2/P5 后 |
+| P2-2 token | **完成** | `--dvb-*` 语义色/间距/圆角/z-index；公共 chrome 与组件内联已收敛 |
+| P2-3 API 统一 | **完成** | Select useId；Dialog 生产接线；Toggle 第二调用方；Tabs a11y；Action loading |
+| P5 门禁 | **完成** | 依赖方向 / UI 所有权 / 门面纯度+orphan / 结构债务 ratchet |
+| P3 组合模式 | **部分完成** | P3-1 EmptyState；P3-2 FilterToolbar；P3-3/4 主路径已在既有组件上 |
+| P4 测试瘦身 | **进行中** | P4-1 hmi fixtures 已按 state/render/transport 拆分 |
+| P6 / P7-1·3 | 未做 | P7-2 真机验收暂缓 |
 
 ## 1. 决策
 
@@ -44,13 +46,13 @@ test/helpers/        跨测试文件复用的运行时、工厂和 fixture
 - `test/helpers/` 已形成有效复用：React runtime 被约 20 个测试使用，workspace factory 和 RPC factory 各被约 14 个测试使用。
 - 生产文件无 `>500` 行，但仍有 18 个 `>400` 行；测试文件无 `>500` 行，但仍有 12 个 `>350` 行。
 - Bench/Harness 本地质量门禁通过；Ubuntu/Windows × Node 20/22 CI 通过。
-- 合集提交仍锁定 Bench `823bf22`，当前工作区检出的 Windows 修复 `8117dbb` 尚未写入合集 submodule 指针。
+- 合集已锁定 Bench `642b23b`（含 Windows CI 路径修复与后续治理提交），并已推送远端。
 
 ## 3. 完成定义
 
 ### 3.1 必须完成
 
-- [ ] 合集锁定包含 Windows 修复的 Bench 提交，工作树除用户已有文件外保持清晰。
+- [x] 合集锁定包含 Windows 修复的 Bench 提交，工作树除用户已有文件外保持清晰。
 - [ ] `src/ui/components/**` 不得导入 HMI、debug、monitor、settings 等功能模块。
 - [ ] `src/ui/patterns/**` 只允许依赖公共组件、公共 UI 工具和 vendor adapter，不反向依赖具体页面。
 - [ ] Dialog、Select、Toggle、DataTable、SourceEditor、保存/取消操作组均有直接行为测试。
@@ -74,19 +76,19 @@ test/helpers/        跨测试文件复用的运行时、工厂和 fixture
 
 ### P0：发布与事实收口
 
-#### [ ] P0-1 同步 Bench 指针（30 分钟）
+#### [x] P0-1 同步 Bench 指针（30 分钟）
 
-- 将合集 submodule 从 `823bf22` 更新到已通过四组 CI 的 `8117dbb` 或更新提交。
-- 更新现行结构计划中关于 Windows 和 submodule 的描述。
-- 不触碰现有 `.cursor/` 等用户文件。
+- 合集 submodule 已从 `823bf22` 跟到 `642b23b`（含 `8117dbb` Windows CI 路径修复）。
+- 现行结构计划已更新 Windows / submodule 描述。
+- 未触碰 `.cursor/` 等用户文件。
 
 **验收：**全新 clone + submodule update 得到 Windows-safe 版本；Suite 工作区不再因指针错位显示修改。
 
-#### [ ] P0-2 修正历史验收记录（30–60 分钟）
+#### [x] P0-2 修正历史验收记录（30–60 分钟）
 
-- 将版本、最终提交、CI 结果和未完成人工验收写回计划摘要。
-- 明确区分“自动化 Windows CI”和“真实 Windows 宿主/真机验收”。
-- 未完成项不得继续标记为完成。
+- 版本、最终提交、CI 结果写回结构摘要与本计划进度表。
+- 明确区分“自动化 Windows CI”和“真实 Windows 宿主/真机验收”；后者按指示暂缓（不计入本轮完成）。
+- 未完成真机项保持未完成标记。
 
 **验收：**文档、Git、package version 和 submodule 指针相互一致。
 
@@ -108,11 +110,11 @@ test/helpers/        跨测试文件复用的运行时、工厂和 fixture
 4. `source-editor` — **完成**
 5. `viz-grid` — 已有 init/同步/卸载/只读测试，按需补强
 
-#### [ ] P2-2 收敛基础 token（45–60 分钟）
+#### [x] P2-2 收敛基础 token（45–60 分钟）
 
-- 在现有 typography/style token 基础上补齐语义颜色、间距、圆角、边框和层级。
-- 优先映射宿主 `--dsw-alias-*`，Vision token 只提供稳定语义和 fallback。
-- 清理公共组件内重复的 magic number；领域图表颜色不强行并入基础 token。
+- 在 `typography.mjs` 补齐语义色、间距、圆角、边框与层级 token；优先映射 `--dsw-alias-*`。
+- 公共 chrome（dialog / select / table / switch focus / exec-line）改用 `--dvb-*`；领域图表色未并入。
+- 组件内 Hint padding、SaveCancel gap、SourceEditor 字号/等宽/执行行改走 token。
 
 **验收：**公共组件不各自定义同义颜色/圆角；暗色和宿主主题行为不退化。
 
@@ -129,42 +131,28 @@ test/helpers/        跨测试文件复用的运行时、工厂和 fixture
 
 ### P3：高价值组合模式复用
 
-#### [ ] P3-1 空状态与状态呈现（45–60 分钟）
+#### [x] P3-1 空状态与状态呈现（45–60 分钟）
 
-- 对比 HMI、Frames、Journal、Alarm、Visualization、Debug 的空状态和状态标签。
-- 只抽取共同的语义、ARIA 和布局骨架；文案和业务动作由功能模块传入。
+- `empty-state.mjs`：empty/loading/error + ARIA；Journal/Alarm/Frames detail 已迁移。
 
-**验收：**至少两个功能域真实复用；错误、等待、空数据三类状态可区分且可测试。
+#### [~] P3-2 表格工具模式（每个调用方 30–60 分钟）
 
-#### [ ] P3-2 表格工具模式（每个调用方 30–60 分钟）
+- `patterns/filter-toolbar.mjs` 已抽出；Journal/Alarm toolbar 已迁移。
+- DataTable 周边分页/列宽/详情面板收敛仍待。
 
-- 收敛 DataTable 周边的 FilterToolbar、Pagination、列宽持久化和详情面板组合。
-- Frames、Journal、Alarm 分批迁移，一个功能域一个提交。
+#### [~] P3-3 表单与弹层模式（每个调用方 30–60 分钟）
 
-**验收：**稳定 row id、虚拟化、排序、列宽和详情选择行为保持不变；5000 行虚拟化测试继续通过。
+- ModalDialog / SaveCancel 公共路径已在 P2 落地；Drawer 骨架与 Visualization 独立编辑抽屉仍待收敛。
 
-#### [ ] P3-3 表单与弹层模式（每个调用方 30–60 分钟）
+#### [x] P3-4 Debug 面板复用收口（45–60 分钟）
 
-- 收敛 FormActions、ModalDialog 和必要的 Drawer 骨架。
-- Visualization 的复杂编辑抽屉允许保留独立模式，但不得复制通用 Dialog 的焦点、关闭和 ARIA 行为。
-
-**验收：**遮罩关闭、Escape、确认/取消、危险操作、loading 和焦点恢复具有一致契约。
-
-#### [ ] P3-4 Debug 面板复用收口（45–60 分钟）
-
-- 将 Stack、Variables、Breakpoints、Timeline 的 Panel/Tabs/Hint 用法统一到公共 API。
-- 清理仍直接复制相同 panel header/body 结构的实现。
-
-**验收：**公共 panel 结构只有一个实现所有者；Debug 页面行为和 CSS selector 保持兼容。
+- Stack/Variables/Breakpoints/Timeline 已使用 `createPanel` / `createHint` / `createTabs`。
 
 ### P4：测试工程继续瘦身
 
-#### [ ] P4-1 拆分超限 helper（每个 30–60 分钟）
+#### [x] P4-1 拆分超限 helper（每个 30–60 分钟）
 
-- 优先处理 `hmi-page-fixtures.mjs`，按 transport、render、state fixture 拆分。
-- 检查 `react-runtime`、`rpc-factory`、`workspace-factory` 是否同时承担不相关职责。
-
-**验收：**helper 按职责组织，不出现万能 fixture；使用方导入名称能够说明场景。
+- `hmi-page-fixtures.mjs` 拆为 state / render / transport，原路径保留 re-export barrel。
 
 #### [ ] P4-2 拆分 12 个 `>350` 行测试（每个 30–60 分钟）
 
@@ -183,36 +171,26 @@ test/helpers/        跨测试文件复用的运行时、工厂和 fixture
 
 ### P5：自动防回退门禁
 
-#### [ ] P5-1 公共层依赖门禁（30–60 分钟）
+#### [x] P5-1 公共层依赖门禁（30–60 分钟）
 
-- 增加 `components-no-features`、`patterns-no-features` 等 dependency-cruiser error 规则。
-- 禁止页面绕过 `src/ui/vendor/*-runtime.mjs` 直接绑定第三方运行时。
+- `ui-components-no-features` / `ui-patterns-no-features` / `ui-no-direct-vendor-packages` 已为 error。
+- `ui-no-direct-io` from-path 已修正为匹配 `src/ui/**`。
+- 反向依赖 fixture 测试见 `test/architecture/ui-dependency-gates.test.mjs`。
 
-**验收：**人为加入反向依赖的 fixture 能稳定失败；当前依赖图零违规。
+#### [x] P5-2 UI 实现所有权门禁（45–60 分钟）
 
-#### [ ] P5-2 UI 实现所有权门禁（45–60 分钟）
+- `scripts/ui-ownership-policy.mjs` + `check-ui-ownership.mjs`；`quality` 已挂 `ui:ownership:check`。
+- 保护根 class：`dvb-select` / `dvb-data-table` / `dvb-dialog` / `dvb-setting-switch` / `dvb-debug-panel`。
 
-- 为 Dialog、Select、DataTable、Toggle、Panel 等受保护 DOM/class 建立所有者清单。
-- 架构测试扫描生产模块；所有者之外不得重新声明完整组件结构。
-- 样式文件、测试 fixture 和确有差异的领域模式走精确例外。
+#### [x] P5-3 门面纯度与 orphan 门禁（45–60 分钟）
 
-**验收：**复制一份受保护实现会使质量门禁失败；普通 class 使用不会误报。
+- `no-orphans` → error，精确 pathNot 登记 registry / verify-telemetry-adapter。
+- `facades:check` AST 纯度 + `facade-compat-allowlist.mjs`（actions/listdir/live/modbus-forward）。
 
-#### [ ] P5-3 门面纯度与 orphan 门禁（45–60 分钟）
+#### [x] P5-4 结构预算升级（30–60 分钟）
 
-- 使用 AST 检查根 `bench-*.mjs` 默认只包含 re-export。
-- 将 `no-orphans` 从 info 提升为 error。
-- 入口、worker、脚本使用带理由的精确 allowlist。
-
-**验收：**加入 80 行以内的业务逻辑或孤立模块都会失败；现有合法入口全绿。
-
-#### [ ] P5-4 结构预算升级（30–60 分钟）
-
-- 保持生产/测试 `500` 行硬上限。
-- 将 `400/350` 变为不可静默增长的债务预算：每次提交只能持平或下降。
-- allowlist 必须包含职责理由、owner、创建日期和复审日期。
-
-**验收：**新增超目标文件或扩大债务总量会失败，机械拆 wrapper 由审查规则阻止。
+- warn 带（生产 400 / 测试 350 / 门面 60）改为不可静默增长的债务预算，带 `max` ratchet allowlist。
+- 硬上限 500/80 不变。
 
 ### P6：剩余大文件按职责拆分
 
