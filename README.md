@@ -4,7 +4,7 @@
 
 `dsh plugin add github:` 要求仓库根就是一个插件包，所以每个插件仍是独立仓库。本仓库是合集：说明怎么一起用，并用 submodule 收齐源码。
 
-当前发布线：**dsh-vision-bench 0.29.5**（Web + Desktop Fetch Host）。`dsh-vision-harness` 0.2.0，默认不装。
+当前发布线：**dsh-vision-bench 0.29.6**（Web + Desktop Fetch Host）。`dsh-vision-harness` 0.2.0，默认不装。
 
 ## 插件
 
